@@ -24,7 +24,7 @@ ul.svc{list-style:none;padding:0;display:grid;gap:.75rem;grid-template-columns:1
 .sticky{position:fixed;bottom:0;left:0;right:0;display:flex;z-index:9}.sticky a{flex:1;text-align:center;padding:1rem;font-weight:800;font-size:1.1rem;text-decoration:none;color:#1d2b1f;background:#f4b400}.sticky a+a{background:#fff;border-top:1px solid #ddd}
 footer{text-align:center;padding:2rem 1rem 5.5rem;color:#555;font-size:.9rem}
 @media(min-width:768px){h1{font-size:3rem}ul.svc{grid-template-columns:1fr 1fr}.gal{grid-template-columns:repeat(3,1fr)}}
-.links{margin:1.5rem auto 0;padding:0 1.25rem;display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem}.lb{display:inline-flex;align-items:center;gap:.5rem;height:40px;padding:0 1rem;border:1px solid #dadce0;border-radius:8px;background:#fff;color:#3c4043;font-weight:600;font-size:.95rem;text-decoration:none}.lb:hover{background:#f8f9fa}.qf{max-width:480px;margin:1.25rem auto 0;background:#fff;color:#1d2b1f;border-radius:14px;padding:1.25rem;text-align:left;box-shadow:0 4px 14px rgba(0,0,0,.2)}.qf label{display:block;font-weight:600;margin-bottom:.85rem}.qf input,.qf textarea{display:block;width:100%;margin-top:.3rem;padding:.7rem .8rem;border:1px solid #cfd8cc;border-radius:10px;font:inherit;font-size:16px}.qf input:focus,.qf textarea:focus{outline:2px solid #3d7a3f;border-color:#3d7a3f}.qf button{width:100%;padding:.9rem;border:0;border-radius:12px;background:#f4b400;color:#1d2b1f;font-weight:800;font-size:1.1rem;cursor:pointer}.qf button:disabled{opacity:.6}.qt{margin:.9rem 0 0;padding:.7rem;border-radius:10px;background:#e7f3e5;color:#1f4d2b;font-weight:700;text-align:center}</style></head><body>
+.links{margin:1.5rem auto 0;padding:0 1.25rem;display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem}.lb{display:inline-flex;align-items:center;gap:.5rem;height:40px;padding:0 1rem;border:1px solid #dadce0;border-radius:8px;background:#fff;color:#3c4043;font-weight:600;font-size:.95rem;text-decoration:none}.lb:hover{background:#f8f9fa}.qf{max-width:480px;margin:1.25rem auto 0;background:#fff;color:#1d2b1f;border-radius:14px;padding:1.25rem;text-align:left;box-shadow:0 4px 14px rgba(0,0,0,.2)}.qf label{display:block;font-weight:600;margin-bottom:.85rem}.qf input,.qf select,.qf textarea{display:block;width:100%;margin-top:.3rem;padding:.7rem .8rem;border:1px solid #cfd8cc;border-radius:10px;font:inherit;font-size:16px}.qf input:focus,.qf select:focus,.qf textarea:focus{outline:2px solid #3d7a3f;border-color:#3d7a3f}.qf button{width:100%;padding:.9rem;border:0;border-radius:12px;background:#f4b400;color:#1d2b1f;font-weight:800;font-size:1.1rem;cursor:pointer}.qf button:disabled{opacity:.6}.qt{margin:.9rem 0 0;padding:.7rem;border-radius:10px;background:#e7f3e5;color:#1f4d2b;font-weight:700;text-align:center}.qf select{background:#fff;color:#1d2b1f}.qt.err{background:#fdecea;color:#8a1f11}</style></head><body>
 <img class="cover top" src="assets/fb-cover.jpg" alt="Mayan Landscaping LLC, Best Landscaping, voted Best of Flag 2024">
 <header><h1 class="sr">Mayan Landscaping LLC</h1>
 <p>Landscaper in Flagstaff, Arizona</p>
@@ -49,14 +49,29 @@ footer{text-align:center;padding:2rem 1rem 5.5rem;color:#555;font-size:.9rem}
 <div class="rev">“They did an amazing and fast job on our two acres. Very happy with them. Pricing was good.”<b>— Paula D., Yelp review</b></div>
 </section>
 <section class="band"><h2>Get Your Quote</h2><p style="font-size:1.2rem;font-weight:700">Call or text below.</p>
-<form class="qf" id="qf" novalidate>
-<label>Name<input type="text" name="name" autocomplete="name"></label>
+<form class="qf" id="qf">
+<input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+<label>Name<input type="text" name="name" autocomplete="name" required></label>
+<label>Phone<input type="tel" name="phone" autocomplete="tel" required></label>
 <label>Address<input type="text" name="address" autocomplete="street-address"></label>
-<label>What are you looking for?<textarea name="details" rows="4"></textarea></label>
+<label>Service<select name="service" required><option>Yard &amp; gutter cleaning</option><option>Landscaping maintenance</option><option>Debris &amp; junk removal</option><option>Snow removal</option></select></label>
+<label>Notes<textarea name="notes" rows="4"></textarea></label>
 <button type="submit">Send Inquiry</button>
-<p class="qt" id="qt" role="status" hidden>Thanks! We'll be in touch soon.</p>
+<p class="qt" id="qt" role="status" hidden></p>
 </form>
-<script>document.getElementById('qf').addEventListener('submit',function(e){e.preventDefault();document.getElementById('qt').hidden=false;this.querySelector('button').disabled=true;});</script>
+<script>
+document.getElementById('qf').addEventListener('submit',function(e){
+e.preventDefault();var f=this,b=f.querySelector('button'),t=document.getElementById('qt');
+if(f._honey.value)return;
+b.disabled=true;b.textContent='Sending…';t.hidden=true;t.classList.remove('err');
+var d=Object.fromEntries(new FormData(f));delete d._honey;
+d._subject='New inquiry from mayanlandscape.com';d._captcha='false';d._template='table';
+fetch('https://formsubmit.co/ajax/landscapingmaintenanceexperts@gmail.com',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(d)})
+.then(function(r){return r.json().then(function(j){if(!r.ok||String(j.success)!=='true')throw 0;})})
+.then(function(){t.textContent="Thanks! We'll be in touch soon.";t.hidden=false;f.reset();b.textContent='Sent';})
+.catch(function(){t.textContent="Couldn't send, please call or text.";t.classList.add('err');t.hidden=false;b.disabled=false;b.textContent='Send Inquiry';});
+});
+</script>
 </section>
 <footer>© 2026 Mayan Landscaping LLC · mayanlandscape.com · Flagstaff, AZ</footer>
 <div class="sticky"><a href="tel:+19286062294">📞 Call</a><a href="sms:+19286062294">💬 Text</a></div>
